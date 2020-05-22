@@ -93,7 +93,7 @@ void DallasTemperature::setOneWire(OneWire* _oneWire) {
 	bitResolution = 9;
 	waitForConversion = true;
 	checkForConversion = true;
-  autoSaveScratchPad = true;
+	autoSaveScratchPad = true;
 
 }
 
@@ -153,7 +153,26 @@ bool DallasTemperature::getAddress(uint8_t* deviceAddress, uint8_t index) {
 	}
 
 	return false;
+}
 
+// resets internal variables used for the address search
+void DallasTemperature::resetAddressSearch(void) {
+	
+	_wire->reset_search();
+	
+}
+
+// searches for the next device address
+// if an additional device is found it's address is loaded into deviceAddress
+// returns true if an additional device is found, false if there are no additional devices
+bool DallasTemperature::addressSearch(uint8_t* deviceAddress) {
+	
+	while (_wire->search(deviceAddress)) {
+		if (validAddress(deviceAddress)) return true;
+	}
+	
+	return false;
+	
 }
 
 // attempt to determine if the device at the given address is connected to the bus
@@ -250,10 +269,9 @@ void DallasTemperature::setResolution(uint8_t newResolution) {
 
 	bitResolution = constrain(newResolution, 9, 12);
 	DeviceAddress deviceAddress;
-	for (uint8_t i = 0; i < devices; i++) {
-		getAddress(deviceAddress, i);
+	resetAddressSearch();
+	while (addressSearch(deviceAddress))
 		setResolution(deviceAddress, bitResolution, true);
-	}
 }
 
 /*  PROPOSAL */
@@ -315,11 +333,11 @@ bool DallasTemperature::setResolution(const uint8_t* deviceAddress,
     bitResolution = newResolution;
     if (devices > 1)
     {
-      for (uint8_t i = 0; i < devices; i++)
+      DeviceAddress deviceAddr;
+      resetAddressSearch();
+      while (addressSearch(deviceAddr))
       {
         if (bitResolution == 12) break;
-        DeviceAddress deviceAddr;
-        getAddress(deviceAddr, i);
         uint8_t b = getResolution(deviceAddr);
         if (b > bitResolution) bitResolution = b;
       }

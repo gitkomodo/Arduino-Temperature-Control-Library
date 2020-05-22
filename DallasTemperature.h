@@ -53,7 +53,7 @@ public:
 
 	void setOneWire(OneWire*);
 
-    void setPullupPin(uint8_t);
+	void setPullupPin(uint8_t);
 
 	// initialise bus
 	void begin(void);
@@ -68,10 +68,16 @@ public:
 	bool validAddress(const uint8_t*);
 
 	// returns true if address is of the family of sensors the lib supports.
-	bool validFamily(const uint8_t* deviceAddress);
+	bool validFamily(const uint8_t*);
 
 	// finds an address at a given index on the bus
 	bool getAddress(uint8_t*, uint8_t);
+
+	// resets internal variables used for the address search
+	void resetAddressSearch(void);
+
+	// searches for the next device address
+	bool addressSearch(uint8_t*);
 
 	// attempt to determine if the device at the given address is connected to the bus
 	bool isConnected(const uint8_t*);
@@ -140,29 +146,29 @@ public:
 	// Is a conversion complete on the wire? Only applies to the first sensor on the wire.
 	bool isConversionComplete(void);
 
-  int16_t millisToWaitForConversion(uint8_t);
+	int16_t millisToWaitForConversion(uint8_t);
   
-  // Sends command to one device to save values from scratchpad to EEPROM by index
-  // Returns true if no errors were encountered, false indicates failure
-  bool saveScratchPadByIndex(uint8_t);
-  
-  // Sends command to one or more devices to save values from scratchpad to EEPROM
-  // Returns true if no errors were encountered, false indicates failure
-  bool saveScratchPad(const uint8_t* = nullptr);
-  
-  // Sends command to one device to recall values from EEPROM to scratchpad by index
-  // Returns true if no errors were encountered, false indicates failure
-  bool recallScratchPadByIndex(uint8_t);
-  
-  // Sends command to one or more devices to recall values from EEPROM to scratchpad
-  // Returns true if no errors were encountered, false indicates failure
-  bool recallScratchPad(const uint8_t* = nullptr);
-  
-  // Sets the autoSaveScratchPad flag
-  void setAutoSaveScratchPad(bool);
-  
-  // Gets the autoSaveScratchPad flag
-  bool getAutoSaveScratchPad(void);
+	// Sends command to one device to save values from scratchpad to EEPROM by index
+	// Returns true if no errors were encountered, false indicates failure
+	bool saveScratchPadByIndex(uint8_t);
+
+	// Sends command to one or more devices to save values from scratchpad to EEPROM
+	// Returns true if no errors were encountered, false indicates failure
+	bool saveScratchPad(const uint8_t* = nullptr);
+
+	// Sends command to one device to recall values from EEPROM to scratchpad by index
+	// Returns true if no errors were encountered, false indicates failure
+	bool recallScratchPadByIndex(uint8_t);
+
+	// Sends command to one or more devices to recall values from EEPROM to scratchpad
+	// Returns true if no errors were encountered, false indicates failure
+	bool recallScratchPad(const uint8_t* = nullptr);
+
+	// Sets the autoSaveScratchPad flag
+	void setAutoSaveScratchPad(bool);
+
+	// Gets the autoSaveScratchPad flag
+	bool getAutoSaveScratchPad(void);
 
 #if REQUIRESALARMS
 
@@ -259,8 +265,8 @@ private:
 	// used to requestTemperature to dynamically check if a conversion is complete
 	bool checkForConversion;
 
-  // used to determine if values will be saved from scratchpad to EEPROM on every scratchpad write
-  bool autoSaveScratchPad;
+	// used to determine if values will be saved from scratchpad to EEPROM on every scratchpad write
+	bool autoSaveScratchPad;
 
 	// count of devices on the bus
 	uint8_t devices;
@@ -279,9 +285,9 @@ private:
 	// Returns true if all bytes of scratchPad are '\0'
 	bool isAllZeros(const uint8_t* const scratchPad, const size_t length = 9);
 
-    // External pullup control
-    void activateExternalPullup(void);
-    void deactivateExternalPullup(void);
+	// External pullup control
+	void activateExternalPullup(void);
+	void deactivateExternalPullup(void);
 
 #if REQUIRESALARMS
 
